@@ -65,7 +65,9 @@ def save_post(conn, post, response):
         for chunk in response.candidates[0].grounding_metadata.grounding_chunks:
             domain = chunk.web.title
             uri = chunk.web.uri
-            url = get_url(uri)
+            # url = get_url(uri)
+            # TODO: get url from uri
+            url = uri
             cur.execute(
                 """
                 INSERT INTO post_url (post_id, domain, url)
