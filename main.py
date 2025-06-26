@@ -21,6 +21,14 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 SUBREDDIT = os.getenv('REDDIT_SUBREDDIT', 'NoStupidQuestions')
 POST_LIMIT = int(os.getenv('REDDIT_POST_LIMIT', '100'))
 
+def get_url(uri: str) -> str:
+    try:
+        response = requests.get(uri, timeout=10)
+        return response.url
+    except Exception as e:
+        print(f"Error getting URL from {uri}: {e}")
+        return uri
+
 
 def get_db_conn():
     return psycopg2.connect(
@@ -57,7 +65,7 @@ def save_post(conn, post, response):
         for chunk in response.candidates[0].grounding_metadata.grounding_chunks:
             domain = chunk.web.title
             uri = chunk.web.uri
-            url = requests.get(uri).url            
+            url = get_url(uri)
             cur.execute(
                 """
                 INSERT INTO post_url (post_id, domain, url)
