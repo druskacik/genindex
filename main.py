@@ -78,9 +78,24 @@ def save_post(conn, post, response):
 
 def process_reddit_posts():
     print("Fetching posts from Reddit...")
-    posts = get_posts(SUBREDDIT, POST_LIMIT)
-    conn = get_db_conn()
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    try:
+        posts = get_posts(SUBREDDIT, POST_LIMIT)
+    except Exception as e:
+        print(f"Error fetching posts from Reddit: {e}")
+        return
+    
+    try:
+        conn = get_db_conn()
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return
+    
+    try:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+    except Exception as e:
+        print(f"Error creating Gemini client: {e}")
+        return
+    
     new_count = 0
     for post in posts:
         if not post_exists(conn, post['id']):
